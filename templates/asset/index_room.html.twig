@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style type="text/css" rel="stylesheet">
+
+        td{
+            white-space: nowrap;
+            overflow:hidden;
+        }
+        a{
+            text-align: center;
+        }
+        tr{
+            margin: 0.2rem;
+        }
+        table {
+            border-collapse: collapse;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="p-2"></div>
+   <div class="container">
+       <div class="row">
+           <div class="col-3">
+               <a class=" btn btn-dark" href="{{ path('home') }}"><i class="fa fa-arrow-left"></i>&nbsp;Back</a>
+           </div>
+           <div class="col-5">
+               <h3>Rooms</h3>
+           </div>
+           {% if not check_in %}
+               <div class="col-4">
+                   <div>
+                       <a style="float:right" class="btn btn-primary" href="{{ path('asset_room_new') }}"><i class="fas fa-plus"></i>&nbsp; Add New</a>
+                   </div>
+               </div>
+           {% endif %}
+       </div>
+       <div class="p-2"></div>
+       <div>
+           <div class="table-responsive">
+               <table class="table table-light table-sm">
+                   <thead>
+                   <tr>
+                       <th >ID</th>
+                       <th >Name</th>
+                       <th>Building</th>
+                       <th>Floor</th>
+                       <th>Type</th>
+                       <th >Actions</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   {%  for room in rooms %}
+                       <tr>
+                           <td style="width: 10%;padding-left: 1rem;">{{ room.id }}</td>
+                           <td>{{ room.name }}</td>
+                           <td>{{ room.building.name}}</td>
+                           <td>{{ room.floor }}</td>
+                           <td>{{ room.type }}</td>
+                           <td width="10%">
+                               <div style="padding-right: 1rem" class="d-flex flex-row justify-content-end">
+                                   <a href="{{ path('asset_room_view',{id:room.id}) }}" class="btn btn-secondary m-r-4">Edit</a>
+                                   <a href="{{ path('asset_room_delete',{id:room.id}) }}" class="btn btn-outline-danger m-r-4">Delete</a>
+                               </div>
+                           </td>
+                       </tr>
+                   {% endfor %}
+                   </tbody>
+               </table>
+           </div>
+       </div>
+   </div>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+    </script>
+{%endblock%}

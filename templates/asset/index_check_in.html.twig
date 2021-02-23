@@ -1,0 +1,284 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style type="text/css" rel="stylesheet">
+
+        .pill{
+            border:solid #5ca5ff 0.15rem;
+            border-radius: 16px;
+        }
+        td{
+            white-space: nowrap;
+            overflow:hidden;
+        }
+        a{
+            text-align: center;
+        }
+        .room-checked,.room-checked td{
+            background-color: #c7ffc4;
+        }
+        .room-unchecked,.room-unchecked td{
+            background-color: #ffc8c8;
+        }
+        tr{
+            margin: 0.2rem;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        table tr.room-checked:hover{
+            cursor:pointer;
+            border-top:solid darkgreen 1px;
+            border-bottom:solid darkgreen 1px ;
+        }
+        table tr.room-unchecked:hover{
+            cursor:pointer;
+            border-top:solid darkred 1px;
+            border-bottom:solid darkred 1px ;
+        }
+        .chip-checked, .chip-unchecked {
+            margin: 0.1rem;
+            border-radius: 8px;
+            padding: 0.1rem 0.6rem;
+        }
+
+        .chip-checked {
+            background-color: green;
+            color: white;
+        }
+
+        .chip-unchecked {
+            background-color: red;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="p-2">
+        <div class="row">
+            <div class="col-3">
+                <a class=" btn btn-dark" href="{{ path('home') }}"><i class="fa fa-arrow-left"></i>&nbsp;Back</a>
+            </div>
+            <div class="col-5">
+                <h1>Check In</h1>
+            </div>
+            {% if not check_in %}
+                <div class="col-4">
+                    <div>
+                        <a style="float:right" class="btn btn-primary" href="{{ path('asset_room_new') }}"><i class="fas fa-plus"></i>&nbsp; Add New</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="p-2"></div>
+        <div style="background-color: white" class="p-2">
+            <ul class="nav nav-pills mb-3 d-flex flex-row" id="pills-tab" role="tablist">
+                <li class="nav-item flex-fill" role="presentation">
+                    <a style="margin-left: 0.2rem;margin-right: 0.2rem"
+                       class="pill nav-link active btn-primary" id="pills-home-tab"
+                       data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home"
+                       aria-selected="true">Rooms</a>
+                </li>
+                <li class="nav-item flex-fill" role="presentation">
+                    <a style="margin-left: 0.2rem;margin-right: 0.2rem"
+                       class="pill nav-link btn-outline-primary" id="pills-profile-tab"
+                       data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile"
+                       aria-selected="false">Today Check</a>
+                </li>
+                <li class="nav-item flex-fill " role="presentation">
+                    <a style="margin-left: 0.2rem;margin-right: 0.2rem" class="pill nav-link btn-outline-primary"
+                       id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
+                       aria-controls="pills-contact" aria-selected="false">Daily</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="p2">
+                        <div class="table-responsive">
+                            <table class="table table-light table-sm">
+                                <thead>
+                                <tr>
+                                    <th >ID</th>
+                                    <th >Name</th>
+                                    <th>Building</th>
+                                    <th>Floor</th>
+                                    <th>Type</th>
+                                    <th >Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%  for room in rooms %}
+                                    <tr {% if check_in %}
+                                        {% if room.lastCheckin %}
+                                            class="room-checked"
+                                        {% else %}
+                                            class="room-unchecked"
+                                        {% endif %}
+                                            {% endif %}>
+                                        <td style="width: 10%;padding-left: 1rem;">{{ room.id }}</td>
+                                        <td>{{ room.name }}</td>
+                                        <td>{{ room.building.name}}</td>
+                                        <td>{{ room.floor }}</td>
+                                        <td>{{ room.type }}</td>
+                                        <td width="10%">
+                                            <div style="padding-right: 1rem" class="d-flex flex-row justify-content-end">
+                                                    <a href="{{ path('asset_checkin_room',{id:room.id}) }}" class="btn btn-secondary m-r-4">View</a>
+                                                <a href="{{ path('asset_checkin_room_checkall',{id:room.id}) }}" class="btn btn-success">
+                                                    <i class="fas fa-check"></i>&nbsp; Check All</a>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                    <div class="p2">
+                        <div class="table-responsive">
+                            <table class="table table-light table-sm">
+                                <thead>
+                                <tr>
+                                    <th >ID</th>
+                                    <th >Name</th>
+                                    <th>Building</th>
+                                    <th>Floor</th>
+                                    <th>Type</th>
+                                    <th width="20%">Assets</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for room in rooms %}
+                                    <tr>
+                                        <td style="width: 10%;padding-left: 1rem;">{{ room.id }}</td>
+                                        <td>{{ room.name }}</td>
+                                        <td>{{ room.building.name}}</td>
+                                        <td>{{ room.floor }}</td>
+                                        <td>{{ room.type }}</td>
+                                        <td width="20%">
+                                        {% if room.lastCheckin %}
+                                            {% for device in room.lastCheckin.devices %}
+                                                <label id="{{ device.id }}"
+                                                       class="chip-checked">
+                                                    {{ device.type.name }}
+                                                </label>&nbsp;
+                                            {% endfor %}
+                                        {% endif %}
+                                            {% for device in room.devices %}
+                                                {% if room.lastCheckin %}
+                                                {% if device not in room.lastCheckin.devices %}
+                                                    <label id="{{ device.id }}"
+                                                           class="chip-unchecked"> {{ device.type.name }}</label>&nbsp;
+                                                {% endif %}
+                                                {% else %}
+                                                    <label id="{{ device.id }}"
+                                                           class="chip-unchecked"> {{ device.type.name }}</label>&nbsp;
+                                                {% endif %}
+
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                    <div class="p2">
+                        <div class="table-responsive">
+                            <table class="table table-light table-sm">
+                                <thead>
+                                <tr>
+                                    <th >ID</th>
+                                    <th >Name</th>
+                                    <th>Building</th>
+                                    <th>Floor</th>
+                                    <th>Type</th>
+                                    <th width="30%">Assets</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for room in rooms %}
+                                    <tr>
+                                        <td style="width: 10%;padding-left: 1rem;">{{ room.id }}</td>
+                                        <td>{{ room.name }}</td>
+                                        <td>{{ room.building.name}}</td>
+                                        <td>{{ room.floor }}</td>
+                                        <td>{{ room.type }}</td>
+                                        <td style="width: 30%">
+                                            {% if room.previousDayCheckin %}
+                                                {% for device in room.previousDayCheckin.devices %}
+                                                    <label id="{{ device.id }}"
+                                                           class="chip-checked">
+                                                        {{ device.type.name }}
+                                                    </label>&nbsp;
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% for device in room.devices %}
+                                                {% if room.previousDayCheckin %}
+                                                    {% if device not in room.previousDayCheckin.devices %}
+                                                        <label id="{{ device.id }}"
+                                                               class="chip-unchecked"> {{ device.type.name }}</label>&nbsp;
+                                                    {% endif %}
+                                                {% else %}
+                                                    <label id="{{ device.id }}"
+                                                           class="chip-unchecked"> {{ device.type.name }}</label>&nbsp;
+                                                {% endif %}
+
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            $(".nav-pills > .nav-item a").each(function () {
+                let master = $(this);
+                master.click(function () {
+                    let selected = master.attr("aria-selected")
+                    console.log("click from "+master.html()+"with "+selected);
+                    if(selected==="false"){
+                        fadeTabs();
+                        fadeFocus();
+                        // select current tab
+                        master.attr("class","nav-link active");
+                        master.attr("aria-selected","true");
+                        $(master.attr("href")).attr("class","tab-pane fade show active")
+                    }
+                })
+            })
+        })
+        function fadeTabs() {
+            $(".tab-content .tab-pane").each(function () {
+                console.log(this);
+                $(this).attr("class","tab-pane fade")
+            })
+        }
+        function fadeFocus() {
+            $(".nav-pills .nav-item a").each(function () {
+                $(this).attr("class","nav-link pill");
+                $(this).attr("aria-selected","false");
+            });
+        }
+    </script>
+{%endblock%}

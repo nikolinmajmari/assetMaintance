@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .device-card {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        /* On mouse-over, add a deeper shadow */
+        .device-card:hover {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        }
+        .infodiv{
+            padding: 0.5rem;
+            margin-bottom: 0.2rem;
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding-left: 40px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="p-2"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <a class=" btn btn-dark" href="{{ path('asset_room_index') }}"><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
+            </div>
+            <div class="col-6">
+            </div>
+            <div class="col-3">
+                <a style="float:right" class="btn btn-primary" href="{{  path('asset_room_edit',{id:room.id}) }}"><i class="fas fa-pen"></i> Edit</a>
+            </div>
+        </div>
+        <div class="p-3"></div>
+        <div class="row">
+            <div class="col-md-1 col-lg-2">
+            </div>
+            <div class="col-md-10 col-lg-8">
+                <div class="row">
+                    <div class="col-4">
+                        <h5>Room</h5>
+                    </div>
+                    <div class="col-8">
+                        <div class="infodiv"> {{ room.name }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <h5>Building</h5>
+                    </div>
+                    <div class="col-8">
+                        <div class="infodiv">{{ room.building.name }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <h5>Floor</h5>
+                    </div>
+                    <div class="col-8">
+                        <div class="infodiv">{{ room.floor}}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <h5>Room Type</h5>
+                    </div>
+                    <div class="col-8">
+                        <div class="infodiv"> {{ room.type}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-1"></div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4>Devices</h4>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-primary" style="float:right" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                    <i class="fas fa-plus"></i>&nbsp; Add Device
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-" id="#device-container">
+                                {% for device in  room.devices %}
+                                    <div class="device-card d-flex flex-row justify-content-between">
+                                        <td>&nbsp;&nbsp;&nbsp;{{ device.type.name }}</td>
+                                        <td><a class="btn btn-danger" href="{{ path('asset_room_device_delete',{id:device.id,dest:room.id}) }}"><i class="fas fa-trash"></i>&nbsp;Delete</a></td>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Add Device</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ form_start(device_form) }}
+                        {{ form_row(device_form.type) }}
+                        {{ form_widget(device_form._token) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}

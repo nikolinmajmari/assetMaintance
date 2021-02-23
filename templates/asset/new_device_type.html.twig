@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="p-2"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <a class=" btn btn-dark" href="{{ path('asset_device_type_index') }}"><i class="fa fa-arrow-left"></i>&nbsp;Back</a>
+                </div>
+                <div class="col-7">
+                    <h1>
+                        {% if app.request.get("_route")=="asset_device_type_new" %}
+                            Add Device
+                        {% else %}
+                            Edit Device
+                        {% endif %}
+
+                    </h1>
+                </div>
+            </div>
+            <div class="p-2">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+              <div class="p-2">
+              </div>
+                <input type="submit" value="Save" class="form-control btn btn-primary">
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

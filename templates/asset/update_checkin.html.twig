@@ -1,0 +1,220 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <style rel="stylesheet" type="text/css">
+        .infodiv {
+            margin: 0.2rem;
+            padding: 0.5rem;
+            background-color: #f4f4f4;
+        }
+
+        .inline-text {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .chip-checked, .chip-unchecked {
+            margin: 0.1rem;
+            border-radius: 8px;
+            padding: 0.1rem 0.6rem;
+        }
+
+        .chip-checked {
+            background-color: green;
+            color: white;
+        }
+
+        .chip-unchecked {
+            background-color: red;
+            color: white;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="p-4">
+        <div class="row">
+            <div class="col-sm-3">
+                <a class=" btn btn-dark" href="{{ path('asset_checkin') }}"><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
+            </div>
+            <div class="col-sm-6">
+                <h2>Check In</h2>
+            </div>
+        </div>
+        <div class="p-2"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-1 col-lg-2">
+                </div>
+                <div class="col-md-10 col-lg-8">
+                    <div class="row">
+                        <div class="col-4">
+                            <h5>Room</h5>
+                        </div>
+                        <div class="col-8">
+                            <div class="infodiv"> {{ room.name }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <h5>Building</h5>
+                        </div>
+                        <div class="col-8">
+                            <div class="infodiv">{{ room.building.name }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <h5>Floor</h5>
+                        </div>
+                        <div class="col-8">
+                            <div class="infodiv">{{ room.floor }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <h5>Room Type</h5>
+                        </div>
+                        <div class="col-8">
+                            <div class="infodiv"> {{ room.type }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-2"></div>
+            <div class="row">
+                <div>
+                    <button type="button" class="btn btn-outline-primary" style="float:right"
+                            id="daily_checkin_add_btn" data-target="#daily_checkin_modal">
+                       <i class="fas fa-check"></i>&nbsp;Check In Devices
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th class="inline-text">Date</th>
+                            <th>Checked Devices</th>
+                            <th style="width: 15%;padding-right: 0.5rem">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for check in check_ins %}
+                            <tr class="daily-checkin">
+                            <td style="width: 10%;padding-left: 0.5rem">{{ check.id }}</td>
+                            <td class="inline-text">{{ check.checkedAt.format("d-m-y") }}</td>
+                            <td class="checked-devices" id="daily_checked_devices_{{ check.id }}">
+                                {% for device in check.devices %}
+                                    <label id="{{ device.id }}" class="chip-checked"> {{ device.type.name }}
+                                    </label>&nbsp;
+                                {% endfor %}
+                                {% for device in room.devices %}
+                                    {% if device not in check.devices %}
+                                        <label id="{{ device.id }}"
+                                               class="chip-unchecked"> {{ device.type.name }}</label>&nbsp;
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td style="width: 15%;padding-right: 0.5rem">
+                                {% if check.checkedAt.format("d-m-y")==now.format("d-m-y") %}
+                                    <button data-target="{{ check.id }}" class="btn btn-secondary daily-checkin-edit"><i
+                                                class="fas fa-pen"></i>&nbsp;Edit
+                                    </button>
+                                {% endif %}
+                            </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="daily_checkin_modal" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="daily_checkin_form" method="post" action="#">
+                        <div class="modal-body">
+                            {% for device in room.devices %}
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           data-target="{{ device.id }}"
+                                           name="device[{{ device.id }}]"
+                                           type="checkbox" value="{{ device.id }}"
+                                           id="flexCheckDefault{{ device.id }}">
+                                    <label class="form-check-label" for="flexCheckDefault{{ device.id }}">
+                                        {{ device.type.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".daily-checkin .daily-checkin-edit").each(function () {
+                const checkId = $(this).attr("data-target");
+                const masterId = "#daily_checked_devices_" + checkId;
+                const master = $(masterId);
+                const form = $("#daily_checkin_form");
+                const devices = $(masterId + " label");
+                console.log("found " + devices.length);
+                $(this).click(function () {
+                    updateModalCheckboxes(devices);
+                    updateModalForm(form, checkId);
+                    $("#daily_checkin_modal").modal("show")
+                })
+            })
+            $("#daily_checkin_add_btn").click(function () {
+                $("#daily_checkin_form").attr("action", "{{ path('asset_checkin_room',{id:room.id}) }}");
+                $("#daily_checkin_modal").modal("show");
+            });
+        });
+
+        function updateModalCheckboxes(checkinDevices) {
+            $("#daily_checkin_form .modal-body input").each(function () {
+                const targetId = $(this).attr("data-target");
+                const checkbox = $(this);
+                checkbox.val(true);
+                checkinDevices.each(function () {
+                    const deviceId = $(this).attr("id");
+                    const deviceChecked = $(this).attr("class");
+                    if (deviceId === targetId) {
+                        if (deviceChecked === "chip-checked") {
+                            checkbox.attr("checked", true);
+                        } else {
+                            checkbox.attr("checked", false);
+                        }
+                    }
+                })
+            })
+        }
+
+        function updateModalForm(form, id) {
+            form.attr("action", "{{ path('asset_checkin_room',{id:room.id}) }}?update=true&&checkinId=" + id);
+        }
+    </script>
+{% endblock %}

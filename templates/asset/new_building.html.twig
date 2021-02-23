@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="p4">
+        <div class="row">
+            <div class="col-md-2">
+                <a class=" btn btn-dark" href="{{ path('asset_building_index') }}"><i class="fa fa-arrow-left"></i>&nbsp;Back</a>
+            </div>
+            <div class="col-md-7">
+                <h1>Add Building</h1>
+            </div>
+        </div>
+        <div class="container">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <input type="submit" value="save" class="btn btn-primary">
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
